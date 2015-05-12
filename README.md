@@ -2,7 +2,52 @@
 **Infrastructure configuration management**
 
 InfraRed provides a configuration management endpoint which is intended to be consumed by services operating within a private cloud.
-It offers a way to quickly and easily register and configure nodes on your network, as well as make those nodes discoverable for consumers.
+It offers a way to quickly and easily register and configure nodes on your network, as well as make those nodes discoverable for consumers, as well as providing a centralized configuration source for those nodes.
+
+## Requirements
+ - [MongoDB](https://www.mongodb.org/)
+
+## Example Usage
+```sh
+irclient register http://localhost:8080 mongodb
+irclient beam http://localhost:8080
+```
+
+```sh
+irserver config.json
+```
+
+## Command Line Options
+```
+irclient command server [nodetype] [hostname] [port]
+
+commands:
+  register  - Registers this node with the specified server
+  beam      - Submits a stream of heartbeats to the server until the process is terminated
+  
+server   - The Infrared server managing the nodes
+nodetype - The type of node to register
+hostname - The hostname or IP address to be used when accessing this node
+port     - The port number of the service running on this node
+```
+
+```
+irserver config
+
+config - The configuration file specifying the server's various options
+```
+
+## Configuration
+
+```json
+{
+  "listen": ":8080",
+  "database": {
+    "url": "localhost",
+    "db": "infrared"
+  }
+}
+```
 
 ## The API
 InfraRed provides a REST API which allows you to register nodes under a specific `node_type` as well as assigning and retrieving configuration
@@ -10,6 +55,21 @@ information for each of those `node_type`s.
 
 ### Node API
 The Node API allows you to easily manage registered nodes on the InfraRed server.
+
+#### List of Online Nodes
+**GET /api/v1/:node_type**
+
+Gets the list of nodes of type `node_type` which have recently triggered a heartbeat.
+
+```json
+[{
+  "id": "abcdef1234567890",
+  "type": "mongodb"
+  "hostname": "127.0.0.1",
+  "port": 27016,
+  "lastSeen": "1970-01-01T00:00:00.000Z"
+}]
+```
 
 #### Node Heartbeat Endpoint
 **GET /api/v1/:node_type/:id/heartbeat**
@@ -84,3 +144,5 @@ Gets the configuration associated with the `node_type` on the InfraRed server.
   "myOption": true 
 }
 ```
+
+Sets the configuration options for a specific node type.
