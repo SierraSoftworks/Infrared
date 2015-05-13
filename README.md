@@ -149,3 +149,16 @@ Gets the configuration associated with the `node_type` on the InfraRed server.
 ```
 
 Sets the configuration options for a specific node type.
+
+### UDP Heartbeat Endpoint
+In the interest of performance, you can send heartbeats to a UDP endpoint. These heartbeats are encoded using ProtocolBuffers and defined by the
+following protocol specification.
+
+```
+package infrared;
+
+message Heartbeat {
+  required string id = 1;
+  required string node_type = 2;
+}
+```
