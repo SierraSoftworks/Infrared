@@ -1,0 +1,7 @@
+package infrared;
+
+
+message Heartbeat {
+	required string id = 1;
+	required string node_type = 2;
+}

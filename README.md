@@ -32,9 +32,12 @@ port     - The port number of the service running on this node
 ```
 
 ```
-irserver config
+irserver config [listenOn] [dbServers] [database]
 
-config - The configuration file specifying the server's various options
+config    - The configuration file specifying the server's various options
+listenOn  - A listen specification like :8080
+dbServers - The database servers to connect to, something like dbhost1,dbhost2:27016
+database  - The name of the database to store information in
 ```
 
 ## Configuration

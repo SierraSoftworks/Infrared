@@ -3,6 +3,7 @@ package infrared
 import (
 	"fmt"
 	"github.com/ant0ine/go-json-rest/rest"
+	"log"
 	"net/http"
 )
 
@@ -47,6 +48,7 @@ func (e APIError) FromQueryError(err error) APIError {
 		e.Message = "We could not find an entry which matched the criteria you specified. Please check them and try again."
 
 	default:
+		log.Printf("Unknown error %s", err)
 		e.Code = 500
 		e.Title = err.Error()
 		e.Message = "An unknown database error occurred when processing your request. Please try again at a later stage."

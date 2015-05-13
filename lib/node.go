@@ -84,7 +84,12 @@ func NodeCreate(res rest.ResponseWriter, req *rest.Request) {
 
 	createRequest := store.NodeCreateRequest{}
 
-	req.DecodeJsonPayload(&createRequest)
+	err := req.DecodeJsonPayload(&createRequest)
+
+	if err != nil {
+		NewAPIError().code(400).title("Bad Request").message("You failed to provide a properly formatted JSON request body.").ToResponse(res)
+		return
+	}
 
 	if createRequest.Hostname == "" {
 		createRequest.Hostname = req.RemoteAddr

@@ -1,7 +1,6 @@
 package store
 
 import (
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 	"math/rand"
@@ -41,14 +40,12 @@ type NodeCreateRequest struct {
 func CreateNodeEntry(node_type string, request NodeCreateRequest) (NodeEntry, error) {
 	id := MakeNodeID(16)
 
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("nodes")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
-
-	c := session.DB("infrared").C("nodes")
 
 	entry := NodeEntry{id, node_type, request.Hostname, request.Port, time.Now()}
 	err = c.Insert(entry.ToMap())
@@ -57,14 +54,13 @@ func CreateNodeEntry(node_type string, request NodeCreateRequest) (NodeEntry, er
 }
 
 func GetNodeEntry(node_type, id string) (NodeEntry, error) {
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("nodes")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
 
-	c := session.DB("infrared").C("nodes")
 	node := NodeEntry{}
 
 	err = c.Find(bson.M{"_id": id, "node_type": node_type}).One(&node)
@@ -73,14 +69,12 @@ func GetNodeEntry(node_type, id string) (NodeEntry, error) {
 }
 
 func GetNodeEntries(node_type string) ([]NodeEntry, error) {
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("nodes")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
-
-	c := session.DB("infrared").C("nodes")
 
 	var nodes []NodeEntry
 
@@ -94,40 +88,36 @@ func GetNodeEntries(node_type string) ([]NodeEntry, error) {
 }
 
 func UpdateNodeEntryLastSeen(node_type, id string) error {
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("nodes")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
 
-	c := session.DB("infrared").C("nodes")
 	err = c.Update(bson.M{"_id": id, "node_type": node_type}, bson.M{"$set": bson.M{"lastSeen": time.Now()}})
 	return err
 }
 
 func UpdateNodeEntry(node_type, id string, request NodeCreateRequest) error {
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("nodes")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
 
-	c := session.DB("infrared").C("nodes")
 	err = c.Update(bson.M{"_id": id, "node_type": node_type}, bson.M{"$set": bson.M{"hostname": request.Hostname, "port": request.Port}})
 	return err
 }
 
 func RemoveNodeEntry(node_type, id string) error {
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("nodes")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
-
-	c := session.DB("infrared").C("nodes")
 
 	err = c.Remove(bson.M{"_id": id, "node_type": node_type})
 	return err
@@ -136,6 +126,7 @@ func RemoveNodeEntry(node_type, id string) error {
 var nodeIDLetters = []rune("0123456789abcdef")
 
 func MakeNodeID(length int) string {
+	rand.Seed(time.Now().UTC().UnixNano())
 	b := make([]rune, length)
 	for i := range b {
 		b[i] = nodeIDLetters[rand.Intn(len(nodeIDLetters))]

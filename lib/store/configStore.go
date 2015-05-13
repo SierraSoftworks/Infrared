@@ -1,7 +1,6 @@
 package store
 
 import (
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 	"time"
@@ -29,18 +28,16 @@ func (c ConfigEntry) ToMap() bson.M {
 }
 
 func GetConfigEntry(node_type string) (interface{}, error) {
-	if len(node_type) == 0 {
+	if node_type == "" {
 		return nil, ValidationError{"bad request"}
 	}
 
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("config")
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
-
-	c := session.DB("infrared").C("config")
 
 	config := ConfigEntry{}
 
@@ -50,19 +47,17 @@ func GetConfigEntry(node_type string) (interface{}, error) {
 }
 
 func SetConfigEntry(node_type string, config interface{}) error {
-	if len(node_type) == 0 {
+	if node_type == "" {
 		return ValidationError{"bad request"}
 	}
 
-	session, err := mgo.Dial("localhost")
+	session, c, err := GetSession("config")
 	if err != nil {
+		log.Fatal(err)
 		panic(err)
 	}
 	defer session.Close()
 
-	session.SetMode(mgo.Monotonic, true)
-
-	c := session.DB("infrared").C("config")
 	_, err = c.Upsert(bson.M{"_id": node_type}, bson.M{"$set": bson.M{"config": config, "lastUpdated": time.Now()}})
 	return err
 }
