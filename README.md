@@ -67,7 +67,7 @@ Gets the list of nodes of type `node_type` which have recently triggered a heart
 ```json
 [{
   "id": "abcdef1234567890",
-  "type": "mongodb"
+  "type": "mongodb",
   "hostname": "127.0.0.1",
   "port": 27016,
   "lastSeen": "1970-01-01T00:00:00.000Z"
@@ -110,7 +110,7 @@ Creates a new node on the InfraRed server, the server will respond with a unique
 ```
 
 #### Updating a Node's Details
-**PUT /api/v1/:node_type/:id
+**PUT /api/v1/:node_type/:id**
 ```json
 {
   "address": "127.0.0.1",
