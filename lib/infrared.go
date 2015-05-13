@@ -3,6 +3,7 @@ package infrared
 import (
 	"github.com/SierraSoftworks/Infrared/lib/config"
 	"github.com/SierraSoftworks/Infrared/lib/store"
+	"github.com/SierraSoftworks/Infrared/lib/protocol"
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/golang/protobuf/proto"
 	"log"
@@ -117,7 +118,7 @@ func StartHttpEndpoint(server *InfraredServer, complete chan bool) {
 
 func StartUdpEndpoint(server *InfraredServer, complete chan bool) {
 	buf := make([]byte, 1024)
-	heartbeat := &Heartbeat{}
+	heartbeat := &protocol.Heartbeat{}
 	for {
 		n, _, err := server.udpConnection.ReadFromUDP(buf)
 		if err != nil {

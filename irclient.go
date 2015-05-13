@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/SierraSoftworks/Infrared/lib"
+	"github.com/SierraSoftworks/Infrared/lib/protocol"
 	"github.com/SierraSoftworks/Infrared/lib/config"
 	"github.com/golang/protobuf/proto"
 	"log"
@@ -139,7 +139,7 @@ func heartbeat(config *config.Client) {
 		log.Fatalf("Failed to resolve local address: %s", err)
 	}
 
-	heartbeat := infrared.Heartbeat{}
+	heartbeat := protocol.Heartbeat{}
 	heartbeat.Id = &config.ID
 	heartbeat.NodeType = &config.Type
 	heartbeatData, err := proto.Marshal(&heartbeat)

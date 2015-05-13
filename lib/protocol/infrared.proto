@@ -1,5 +1,4 @@
-package infrared;
-
+package protocol;
 
 message Heartbeat {
 	required string id = 1;
